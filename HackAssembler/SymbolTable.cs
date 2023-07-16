@@ -1,4 +1,4 @@
-namespace Assembler;
+namespace HackAssembler;
 
 public class SymbolTable
 {
