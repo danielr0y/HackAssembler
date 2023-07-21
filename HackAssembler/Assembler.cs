@@ -14,6 +14,12 @@ public interface Writable
     void WriteLine(string line);
 }
 
+/**
+ * Hack assembly programs are allowed to use symbolic labels before the symbols are defined.
+ * This implementation employs a two-pass strategy to support this requirement
+ * where labels are found and their line numbers added to the symbol table during the first pass
+ * and instructions are translated during the second.
+ */
 public class Assembler
 {
     private readonly AssemblyParser _parser;
