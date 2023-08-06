@@ -34,14 +34,14 @@ public class Parser : AssemblyParser
     {
         do
         {
-            string textInstruction = _source.ReadLine();
-            CurrentInstruction = ParseInstruction(textInstruction);
+            CurrentInstruction = ParseInstruction(_source.ReadLine());
         } while (CurrentInstruction is Skippable_Instruction);
     }
 
-    private Instruction ParseInstruction(string instruction)
+    private Instruction ParseInstruction(string line)
     {
-        var textInstruction = instruction.TrimStart().Split(' ', 2)[0];
+        var instructionAndComment = line.Split("//", 2);
+        var textInstruction = instructionAndComment[0].Trim();
 
         switch (DetermineInstructionType(textInstruction))
         {
@@ -93,26 +93,22 @@ public class Parser : AssemblyParser
 
     private InstructionType DetermineInstructionType(string textInstruction)
     {
+        if (String.IsNullOrWhiteSpace(textInstruction))
+        {
+            return InstructionType.SKIPPABLE;
+        }
+
         var instructionTypes = new Dictionary<char, InstructionType>()
         {
             { '@', InstructionType.A_INSTRUCTION },
             { '(', InstructionType.L_INSTRUCTION },
             { 'C', InstructionType.C_INSTRUCTION },
-            { '/', InstructionType.SKIPPABLE },
         };
 
-        char firstChar;
-        try
+        char firstChar = textInstruction.ToCharArray()[0];
+        if (!instructionTypes.ContainsKey(firstChar))
         {
-            firstChar = textInstruction.ToCharArray()[0];
-            if (! instructionTypes.ContainsKey(firstChar))
-            {
-                firstChar = 'C';
-            }
-        }
-        catch (IndexOutOfRangeException e)
-        {
-            return InstructionType.SKIPPABLE;
+            firstChar = 'C';
         }
 
         return instructionTypes[firstChar];
